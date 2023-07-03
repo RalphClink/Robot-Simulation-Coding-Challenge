@@ -6,20 +6,20 @@ from table import Table
 class Robot:
 
     def __init__(self):
-        self.current_y_position = None          # Robots y coordinate on the table
-        self.current_x_position = None          # Robots x coordinate on the table
-        self.direction = None                   # Robots direction (N/S/E/W)
-        self.is_placed = False                  # Is the robot on the table?
-        self.table_size = 5
-        self.table = Table(self.table_size)     # The table the robot plays on
+        self.current_y_position = None  # Robots y coordinate on the table
+        self.current_x_position = None  # Robots x coordinate on the table
+        self.direction = None  # Robots direction (N/S/E/W)
+        self.is_placed = False  # Is the robot on the table?
+        self.table_size = 5  # The size of the table, can be changed but is 5x5 for this program
+        self.table = Table(self.table_size)  # The table the robot plays on
 
     # Places the robot on the table
-    def place_robot(self, y, x, direction):
-        y = -abs(y) - 1                         # Because (0,0) is bottom left corner, need to invert and -1 y coordinate
+    def place_robot(self, x, y, direction):
+        y = -abs(y) - 1  # Because (0,0) is bottom left corner, need to invert and -1 y coordinate
         self.table.table[y][x] = 'R'
 
         # Update attributes now robot is on the board
-        self.set_current_y_position(-abs(y) - 1)
+        self.set_current_y_position(y)
         self.set_current_x_position(x)
         self.set_direction(direction)
         self.set_is_placed()
@@ -32,29 +32,86 @@ class Robot:
 
         match direction:
             case 'NORTH':
-                pass
+                if self.validate_move(current_y_position, current_x_position, direction):
+                    self.set_current_y_position(current_y_position - 1)
             case 'SOUTH':
-                pass
+                if self.validate_move(current_y_position, current_x_position, direction):
+                    self.set_current_y_position(current_y_position + 1)
             case 'EAST':
-                pass
+                if self.validate_move(current_y_position, current_x_position, direction):
+                    self.set_current_x_position(current_x_position + 1)
             case 'WEST':
-                pass
+                if self.validate_move(current_y_position, current_x_position, direction):
+                    self.set_current_x_position(current_x_position - 1)
 
-    # Reports the robots position
-    def report_position(self):
-        pass
+        # Once robot has moved table needs to be updated to reflect the new position
+        self.update_table()
 
     # Checks a move is valid (Robot won't fall off edge)
+    # Returns false if move is out of bounds, else returns true
     def validate_move(self, current_y_position, current_x_position, direction):
         match direction:
             case 'NORTH':
-                pass
+                if (current_y_position - 1) < (-abs(self.table_size)):
+                    return False
+                else:
+                    return True
             case 'SOUTH':
-                pass
+                if (current_y_position + 1) > 0:
+                    return False
+                else:
+                    return True
             case 'EAST':
-                pass
+                if (current_x_position + 1) > (self.table_size - 1):
+                    return False
+                else:
+                    return True
             case 'WEST':
-                pass
+                if (current_x_position - 1) < 0:
+                    return False
+                else:
+                    return True
+
+    # Rotate the robot left
+    def rotate_robot(self, rotate_direction):
+        direction_index = None
+        new_direction = None
+
+        current_direction = self.get_direction()
+        directions = ['NORTH', 'EAST', 'SOUTH', 'WEST']
+
+        # Retrieve the index of the current direction
+        for i in range(len(directions)):
+            if directions[i] == current_direction:
+                direction_index = i
+
+        if rotate_direction == "LEFT":
+            new_direction = directions[direction_index - 1]
+        elif rotate_direction == "RIGHT":
+            if direction_index + 1 >= len(directions):  # If at end of array need to return to index 0 (East -> North)
+                new_direction = directions[0]
+            else:
+                new_direction = directions[direction_index + 1]
+
+        self.set_direction(new_direction)
+
+    # Reports the robots position
+    def report_position(self):
+        current_x_position = self.get_current_x_position()
+        current_y_position = abs(self.get_current_y_position() + 1)      # Need to convert back into positive int for readability
+        current_direction = self.get_direction()
+
+        print(f'{current_x_position},{current_y_position},{current_direction}')
+
+    # Updates the table by creating a new blank table and adding the robots position in
+    # Should be called after an update to the robots position
+    def update_table(self):
+        table_size = self.get_table_size()
+        current_y_position = self.get_current_y_position()
+        current_x_position = self.get_current_x_position()
+        new_table = Table(table_size)
+        new_table.table[current_y_position][current_x_position] = 'R'
+        self.set_table(new_table)
 
     # Set methods
     def set_current_y_position(self, coordinate):
@@ -68,6 +125,9 @@ class Robot:
 
     def set_is_placed(self):
         self.is_placed = True
+
+    def set_table(self, table):
+        self.table = table
 
     # Get methods
     def get_direction(self):
