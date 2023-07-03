@@ -101,7 +101,8 @@ class Robot:
         current_y_position = abs(self.get_current_y_position() + 1)      # Need to convert back into positive int for readability
         current_direction = self.get_direction()
 
-        print(f'{current_x_position},{current_y_position},{current_direction}')
+        output = f'{current_x_position},{current_y_position},{current_direction}'
+        print(output)
 
     # Updates the table by creating a new blank table and adding the robots position in
     # Should be called after an update to the robots position

@@ -1,6 +1,5 @@
-from robot import Robot
+from controller import Controller
 
-robot = Robot()
-robot.place_robot(0, 0, 'NORTH')
-robot.table.print_table()
-robot.report_position()
+if __name__ == '__main__':
+    controller = Controller()
+    controller.control_loop()
