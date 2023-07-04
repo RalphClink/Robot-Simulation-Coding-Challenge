@@ -12,17 +12,26 @@ class Robot:
         self.is_placed = False  # Is the robot on the table?
         self.table_size = 5  # The size of the table, can be changed but is 5x5 for this program
         self.table = Table(self.table_size)  # The table the robot plays on
+        self.valid_directions = ['NORTH', 'SOUTH', 'EAST', 'WEST']
 
     # Places the robot on the table
     def place_robot(self, x, y, direction):
+        table_size = self.get_table_size()
         y = -abs(y) - 1  # Because (0,0) is bottom left corner, need to invert and -1 y coordinate
-        self.table.table[y][x] = 'R'
 
-        # Update attributes now robot is on the board
-        self.set_current_y_position(y)
-        self.set_current_x_position(x)
-        self.set_direction(direction)
-        self.set_is_placed()
+        # Verify that the placement is not invalid (out of bounds) and that direction is valid
+        if x < 0 or x > table_size or y > -1 or y < -abs(table_size):
+            pass
+        elif direction not in self.get_valid_directions():
+            pass
+        else:
+            self.table.table[y][x] = 'R'
+
+            # Update attributes now robot is on the board
+            self.set_current_y_position(y)
+            self.set_current_x_position(x)
+            self.set_direction(direction)
+            self.set_is_placed()
 
     # Moves the robot 1 space in the direction it's facing
     def move_robot(self):
@@ -36,7 +45,10 @@ class Robot:
                     self.set_current_y_position(current_y_position - 1)
             case 'SOUTH':
                 if self.validate_move(current_y_position, current_x_position, direction):
-                    self.set_current_y_position(current_y_position + 1)
+                    if current_y_position + 1 == 0:
+                        pass
+                    else:
+                        self.set_current_y_position(current_y_position + 1)
             case 'EAST':
                 if self.validate_move(current_y_position, current_x_position, direction):
                     self.set_current_x_position(current_x_position + 1)
@@ -50,9 +62,10 @@ class Robot:
     # Checks a move is valid (Robot won't fall off edge)
     # Returns false if move is out of bounds, else returns true
     def validate_move(self, current_y_position, current_x_position, direction):
+        table_size = self.get_table_size()
         match direction:
             case 'NORTH':
-                if (current_y_position - 1) < (-abs(self.table_size)):
+                if (current_y_position - 1) < (-abs(table_size)):
                     return False
                 else:
                     return True
@@ -62,7 +75,7 @@ class Robot:
                 else:
                     return True
             case 'EAST':
-                if (current_x_position + 1) > (self.table_size - 1):
+                if (current_x_position + 1) > (table_size - 1):
                     return False
                 else:
                     return True
@@ -97,12 +110,16 @@ class Robot:
 
     # Reports the robots position
     def report_position(self):
-        current_x_position = self.get_current_x_position()
-        current_y_position = abs(self.get_current_y_position() + 1)      # Need to convert back into positive int for readability
-        current_direction = self.get_direction()
+        if not self.get_is_placed():     # Verify that the robot has been placed
+            output = "Robot Not Yet Placed"
+        else:
+            current_x_position = self.get_current_x_position()
+            current_y_position = abs(self.get_current_y_position() + 1)      # Need to convert back into positive int for readability
+            current_direction = self.get_direction()
 
-        output = f'{current_x_position},{current_y_position},{current_direction}'
-        print(output)
+            output = f'{current_x_position},{current_y_position},{current_direction}'
+
+        return output
 
     # Updates the table by creating a new blank table and adding the robots position in
     # Should be called after an update to the robots position
@@ -145,3 +162,6 @@ class Robot:
 
     def get_table_size(self):
         return self.table_size
+
+    def get_valid_directions(self):
+        return self.valid_directions

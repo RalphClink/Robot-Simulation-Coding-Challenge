@@ -8,6 +8,11 @@ class Controller:
         self.robot = Robot()
 
     @staticmethod
+    def list_commands():
+        output = "PLACE X,Y,DIRECTION | LEFT | RIGHT | MOVE | REPORT | DISPLAY TABLE | EXIT"
+        print(output)
+
+    @staticmethod
     def get_user_command():
         user_command = input("Enter Command: ")
         return user_command
@@ -26,8 +31,15 @@ class Controller:
                     self.control_rotate_robot(user_command)
                 case 'REPORT':
                     self.control_report_robot()
+                case 'DISPLAY TABLE':
+                    self.control_display_table()
                 case 'EXIT':
                     self.exit_program()
+                # Used for testing purposes only
+                case 'X':
+                    print(self.robot.get_current_x_position())
+                case 'Y':
+                    print(self.robot.get_current_y_position())
 
     # Handles moving the robot
     def control_move_robot(self):
@@ -39,7 +51,7 @@ class Controller:
 
     # Handles reporting the robots position
     def control_report_robot(self):
-        self.robot.report_position()
+        print(self.robot.report_position())
 
     # Handles placing the robot (command includes int and strings so bit messy)
     def control_place_robot(self, user_command):
@@ -50,12 +62,17 @@ class Controller:
 
         self.robot.place_robot(user_command[1], user_command[2], user_command[3])
 
+    # Controls displaying the current table
+    def control_display_table(self):
+        self.robot.table.print_table()
+
     # Will terminate the program when called
     @staticmethod
     def exit_program():
         quit()
 
     # The loop that allows the user to continuously enter commands
+    # Only used for human interaction, not required for testing
     def control_loop(self):
         while True:
             self.process_user_command()
