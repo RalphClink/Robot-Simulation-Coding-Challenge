@@ -8,6 +8,9 @@ The table class represents the 5x5 table that the robot moves around on.
 
 The robot class contains the methods to move the robot around the table, and update information such as its current location or direction
 
+Given the nature of 2d arrays, from a code point of view the coordinates are written in a (y,x) format, but displayed to the user in an (x,y) format. For example when accessing the table the code would look something like table[y][x].
+
+
 ## The table structure
 The table is a 2d array, with 'x' representing an empty space, and 'R' representing the robots current position. 
 
